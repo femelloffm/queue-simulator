@@ -1,0 +1,32 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+group = 'org.pucrs.br'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = 'org.pucrs.br.Main'
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.pucrs.br.Main'
+        )
+    }
+}
