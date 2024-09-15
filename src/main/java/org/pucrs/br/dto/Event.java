@@ -1,4 +1,4 @@
-package org.pucrs.br;
+package org.pucrs.br.dto;
 
 public class Event {
     private EventType type;

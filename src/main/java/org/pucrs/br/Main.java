@@ -1,10 +1,12 @@
 package org.pucrs.br;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import org.pucrs.br.component.Queue;
+import org.pucrs.br.component.RandomNumberGenerator;
+import org.pucrs.br.dto.Event;
+import org.pucrs.br.simulator.SimpleQueueSimulator;
+import org.pucrs.br.util.EventComparator;
+
+import java.util.PriorityQueue;
 
 public class Main {
     private static final double a = 16544105325.0;
@@ -13,98 +15,19 @@ public class Main {
     private static final double seed = 53492443;
     private static final int numberOfServers = 1;
     private static final int queueCapacity = 5;
-    private static final int entryMinTime = 2;
-    private static final int entryMaxTime = 5;
-    private static final int serviceMinTime = 3;
-    private static final int serviceMaxTime = 5;
-    private static final double[] queueTimes = new double[queueCapacity + 1];
-    private static final List<Event> scheduledEvents = initializeScheduler();
-    private static int randomNumberCount = 100000;
-    private static int lossCount = 0;
-    private static double previous = seed;
-    private static int queueCurrentSize = 0;
-    private static double globalTime = 0.0;
+    private static final double arrivalMinTime = 2.0;
+    private static final double arrivalMaxTime = 5.0;
+    private static final double serviceMinTime = 3.0;
+    private static final double serviceMaxTime = 5.0;
+    private static final int randomNumberCount = 100000;
+    private static final double firstArrivalTime = 2.0;
 
     public static void main(String[] args) {
-        while (randomNumberCount > 0) {
-            Event event = nextEvent();
-            if (event.getType() == EventType.ENTRY) {
-                entry(event);
-            } else if (event.getType() == EventType.EXIT) {
-                exit(event);
-            }
-        }
-        showSimulationStats();
-    }
+        RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator(a, c, m, seed, randomNumberCount);
+        PriorityQueue<Event> scheduler = new PriorityQueue<>(new EventComparator());
+        Queue queue = new Queue(numberOfServers, queueCapacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
 
-    private static void entry(Event event) {
-        updateTimeCount(event.getTime());
-        if (queueCurrentSize < queueCapacity) {
-            queueCurrentSize++;
-            if (queueCurrentSize <= numberOfServers) {
-                scheduleExit();
-            }
-        } else {
-            lossCount++;
-        }
-        scheduleEntry();
-    }
-
-    private static void exit(Event event) {
-        updateTimeCount(event.getTime());
-        queueCurrentSize--;
-        if (queueCurrentSize >= numberOfServers) {
-            scheduleExit();
-        }
-    }
-
-    private static void scheduleEntry() {
-        double entryTime = ((entryMaxTime - entryMinTime) * nextRandom()) + entryMinTime;
-        scheduledEvents.add(new Event(EventType.ENTRY, globalTime + entryTime));
-    }
-
-    private static void scheduleExit() {
-        double exitTime = ((serviceMaxTime - serviceMinTime) * nextRandom()) + serviceMinTime;
-        scheduledEvents.add(new Event(EventType.EXIT, globalTime + exitTime));
-    }
-
-    private static void updateTimeCount(double eventTime) {
-        double duration = eventTime - globalTime;
-        queueTimes[queueCurrentSize] = queueTimes[queueCurrentSize] + duration;
-
-        globalTime = eventTime;
-    }
-
-    private static Event nextEvent() {
-        Event event = scheduledEvents.stream()
-                .min(Comparator.comparingDouble(Event::getTime))
-                .orElseThrow(() -> new RuntimeException("There are no events scheduled"));
-        scheduledEvents.remove(event);
-
-        return event;
-    }
-
-    private static double nextRandom() {
-        previous = ((a * previous) + c) % m;
-        randomNumberCount--;
-        return previous / m;
-    }
-
-    private static void showSimulationStats() {
-        System.out.println("---------- SIMULATION COMPLETED ----------");
-        System.out.println("Global time = " + globalTime);
-        System.out.println("Time spent in each queue state:");
-        for (int index = 0; index <= queueCapacity; index++) {
-            BigDecimal probability = new BigDecimal(queueTimes[index] / globalTime)
-                    .setScale(10, RoundingMode.HALF_UP);
-            System.out.println(index + ": " + queueTimes[index] + " (" + probability + "%)");
-        }
-        System.out.println("Loss count = " + lossCount);
-    }
-
-    private static List<Event> initializeScheduler() {
-        List<Event> eventList = new ArrayList<>();
-        eventList.add(new Event(EventType.ENTRY, 2.0));
-        return eventList;
+        SimpleQueueSimulator simpleQueueSimulator = new SimpleQueueSimulator(randomNumberGenerator, scheduler, queue, firstArrivalTime);
+        simpleQueueSimulator.simulate();
     }
 }
