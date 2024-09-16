@@ -59,8 +59,7 @@ public class Queue {
         lossCount++;
     }
 
-    public boolean in(double duration) {
-        times[customerCount] += duration;
+    public boolean in() {
         if (customerCount < capacity) {
             customerCount++;
             return true;
@@ -70,14 +69,15 @@ public class Queue {
         }
     }
 
-    public void out(double duration) {
+    public void updateTime(double duration) {
         times[customerCount] += duration;
+    }
+
+    public void out() {
         customerCount--;
     }
 
     public void showStatistics(double globalTime) {
-        System.out.println("---------- SIMULATION COMPLETED ----------");
-        System.out.println("Global time = " + globalTime);
         System.out.println("Time spent in each queue state:");
         for (int index = 0; index <= capacity; index++) {
             BigDecimal probability = new BigDecimal(times[index] / globalTime)

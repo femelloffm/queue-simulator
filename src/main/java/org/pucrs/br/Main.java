@@ -25,9 +25,11 @@ public class Main {
     public static void main(String[] args) {
         RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator(a, c, m, seed, randomNumberCount);
         PriorityQueue<Event> scheduler = new PriorityQueue<>(new EventComparator());
-        Queue queue = new Queue(numberOfServers, queueCapacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
+        Queue firstQueue = new Queue(numberOfServers, queueCapacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
+        Queue secondQueue = new Queue(numberOfServers, queueCapacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
 
-        SimpleQueueSimulator simpleQueueSimulator = new SimpleQueueSimulator(randomNumberGenerator, scheduler, queue, firstArrivalTime);
+        SimpleQueueSimulator simpleQueueSimulator = new SimpleQueueSimulator(randomNumberGenerator, scheduler,
+                firstQueue, secondQueue, firstArrivalTime);
         simpleQueueSimulator.simulate();
     }
 }
