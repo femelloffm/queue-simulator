@@ -21,6 +21,7 @@ public class GeneralQueueSimulator {
         this.queues = queues;
         this.globalTime = 0.0;
 
+        // Inicializa o primeiro evento de chegada
         scheduler.add(new Event(EventType.IN, firstArrivalTime));
     }
 
@@ -43,6 +44,8 @@ public class GeneralQueueSimulator {
         boolean success = queues[0].in();
         if (success && queues[0].status() <= queues[0].getServers()) {
             schedulePass(0);
+        } else if (!success) {
+            queues[0].loss();  // Cliente perdido
         }
         scheduleEntry();
     }
@@ -61,6 +64,8 @@ public class GeneralQueueSimulator {
             boolean success = queues[i + 1].in();
             if (success && queues[i + 1].status() <= queues[i + 1].getServers()) {
                 scheduleExit(i + 1);
+            } else if (!success) {
+                queues[i + 1].incrementLostCustomers();  // Cliente perdido na próxima fila
             }
         }
     }
@@ -91,7 +96,7 @@ public class GeneralQueueSimulator {
 
     private void accumulateTime(double eventTime) {
         for (Queue queue : queues) {
-            queue.updateTime(eventTime - globalTime);
+            queue.updateTime(eventTime - globalTime);  // Atualiza o tempo de cada fila
         }
         globalTime = eventTime;
     }
@@ -101,7 +106,7 @@ public class GeneralQueueSimulator {
         System.out.println("Global time = " + globalTime);
         for (int i = 0; i < queues.length; i++) {
             System.out.println("--> QUEUE " + (i + 1));
-            queues[i].showStatistics(globalTime);
+            queues[i].showStatistics(globalTime);  // Exibe as estatísticas da fila
         }
     }
 }

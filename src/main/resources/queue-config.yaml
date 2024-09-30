@@ -1,16 +1,74 @@
+#==============================================================================
+#  EXAMPLE
+#  Write '#' to input comments
+#==============================================================================
+#
+#  HOW TO EDIT THIS FILE
+#
+#  To simulate with pseudo-random numbers automatically generated, use the options 'rndnumbersPerSeed' and 'seeds'
+#    rndnumbersPerSeed: <value> (it is only used if the option 'seeds' is declared)
+#    seeds: (list of seed values used to automatically generate the pseudo-random numbers)
+#    - 1
+#    - 2
+#
+#  To simulate with a given list of pseudo-random numbers, use option 'rndnumbers'
+#    rndnumbers: (list of pseudo-random numbers to be used during the simulation)
+#    - 0.2176
+#    - 0.0103
+#    - 0.1109
+#
+#  IMPORTANT:
+#    * If the option 'seeds' is used, 'rndnumbers' is ignored. In this case, delete 'rndnumbers'
+#      and its list of pseudo-random numbers
+#
+#  The remainder details in this file is self-explained. Good-luck! :-)
+#
+#  DO NOT DELETE THE NEXT LINE STARTED BY '!'
+  !PARAMETERS
+arrivals:
+  Q1: 1.0
+
 queues:
-  - id: 1
+  Q1:
     servers: 2
     capacity: 3
-    arrival:
-      min: 1.0
-      max: 4.0
-    service:
-      min: 3.0
-      max: 4.0
-  - id: 2
+    minArrival: 1.0
+    maxArrival: 4.0
+    minService: 3.0
+    maxService: 4.0
+  Q2:
     servers: 1
     capacity: 5
-    service:
-      min: 2.0
-      max: 3.0
+    minService: 2.0
+    maxService: 3.0
+
+network:
+  -  source: Q1
+     target: Q2
+     probability: 1.0
+
+rndnumbers:
+  - 0.2176
+  - 0.0103
+  - 0.1109
+  - 0.3456
+  - 0.9910
+  - 0.2323
+  - 0.9211
+  - 0.0322
+  - 0.1211
+  - 0.5131
+  - 0.7208
+  - 0.9172
+  - 0.9922
+  - 0.8324
+  - 0.5011
+  - 0.2931
+
+rndnumbersPerSeed: 100000
+seeds:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5

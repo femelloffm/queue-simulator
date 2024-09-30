@@ -10,10 +10,11 @@ public class Queue {
     private final double maxArrival;
     private final double minService;
     private final double maxService;
-    private final double[] times;
-    private int customerCount;
-    private int lossCount;
+    private final double[] times; // Array to track time spent in each state
+    private int customerCount; // Current number of customers in the queue
+    private int lossCount; // Counter for lost customers
 
+    // Constructor
     public Queue(final int servers, final int capacity, final double minArrival, final double maxArrival,
                  final double minService, final double maxService) {
         this.servers = servers;
@@ -22,15 +23,17 @@ public class Queue {
         this.maxArrival = maxArrival;
         this.minService = minService;
         this.maxService = maxService;
-        this.customerCount = 0;
-        this.lossCount = 0;
-        this.times = new double[capacity + 1];
+        this.customerCount = 0; // Initially no customers
+        this.lossCount = 0; // Initially no customers are lost
+        this.times = new double[capacity + 1]; // Array to track time for each possible queue state
     }
 
+    // Returns the current number of customers in the queue
     public int status() {
         return customerCount;
     }
 
+    // Getter methods for queue configuration parameters
     public int getServers() {
         return servers;
     }
@@ -55,35 +58,40 @@ public class Queue {
         return maxService;
     }
 
+    // Increment the number of lost customers (when the queue is full)
     public void loss() {
         lossCount++;
     }
 
+    // Method to handle a new customer trying to enter the queue
     public boolean in() {
         if (customerCount < capacity) {
-            customerCount++;
+            customerCount++; // Increment customer count if there's space
             return true;
         } else {
-            lossCount++;
+            lossCount++; // Increment loss count if the queue is full
             return false;
         }
     }
 
+    // Update the time spent in the current queue state (based on customer count)
     public void updateTime(double duration) {
         times[customerCount] += duration;
     }
 
+    // Method to handle a customer exiting the queue
     public void out() {
-        customerCount--;
+        customerCount--; // Decrease the customer count when someone leaves
     }
 
+    // Show statistics at the end of the simulation
     public void showStatistics(double globalTime) {
         System.out.println("Time spent in each queue state:");
         for (int index = 0; index <= capacity; index++) {
-            BigDecimal probability = new BigDecimal(times[index] / globalTime)
-                    .setScale(10, RoundingMode.HALF_UP);
-            System.out.println(index + ": " + times[index] + " (" + probability + "%)");
+            BigDecimal probability = new BigDecimal(times[index] / globalTime * 100) // Probability as a percentage
+                    .setScale(2, RoundingMode.HALF_UP); // Round to two decimal places
+            System.out.println("State " + index + " customers: " + times[index] + " units (" + probability + "% of total time)");
         }
-        System.out.println("Loss count = " + lossCount);
+        System.out.println("Number of lost customers = " + lossCount);
     }
 }
