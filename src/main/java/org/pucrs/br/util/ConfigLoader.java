@@ -26,40 +26,63 @@ public class ConfigLoader {
         return config;
     }
 
-    // Métodos para acessar as seções específicas do YAML
-
     // Obtém a configuração das filas (queues)
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getQueuesConfig() {
-        return (List<Map<String, Object>>) config.get("queues");
+    public Map<String, Map<String, Object>> getQueuesConfig() {
+        Object queuesObj = config.get("queues");
+        if (queuesObj instanceof Map<?, ?>) {
+            return (Map<String, Map<String, Object>>) queuesObj;
+        }
+        System.out.println("Queues object is of type: " + (queuesObj != null ? queuesObj.getClass() : "null"));
+        throw new RuntimeException("Invalid queues configuration format");
     }
 
     // Obtém a configuração das chegadas (arrivals)
     @SuppressWarnings("unchecked")
     public Map<String, Object> getArrivalsConfig() {
-        return (Map<String, Object>) config.get("arrivals");
+        Object arrivalsObj = config.get("arrivals");
+        if (arrivalsObj instanceof Map<?, ?>) {
+            return (Map<String, Object>) arrivalsObj;
+        }
+        throw new RuntimeException("Invalid arrivals configuration format");
     }
 
     // Obtém a configuração da rede (network)
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getNetworkConfig() {
-        return (List<Map<String, Object>>) config.get("network");
+        Object networkObj = config.get("network");
+        if (networkObj instanceof List<?>) {
+            return (List<Map<String, Object>>) networkObj;
+        }
+        throw new RuntimeException("Invalid network configuration format");
     }
 
     // Obtém os números pseudo-aleatórios, se existirem
     @SuppressWarnings("unchecked")
     public List<Double> getRndNumbers() {
-        return (List<Double>) config.get("rndnumbers");
+        Object rndNumbersObj = config.get("rndnumbers");
+        if (rndNumbersObj instanceof List<?>) {
+            return (List<Double>) rndNumbersObj;
+        }
+        throw new RuntimeException("Invalid rndnumbers configuration format");
     }
 
     // Obtém as sementes (seeds) para geração de números aleatórios, se existirem
     @SuppressWarnings("unchecked")
     public List<Integer> getSeeds() {
-        return (List<Integer>) config.get("seeds");
+        Object seedsObj = config.get("seeds");
+        if (seedsObj instanceof List<?>) {
+            return (List<Integer>) seedsObj;
+        }
+        throw new RuntimeException("Invalid seeds configuration format");
     }
 
     // Obtém a quantidade de números pseudo-aleatórios por semente
     public int getRndNumbersPerSeed() {
-        return (int) config.getOrDefault("rndnumbersPerSeed", 0);  // Retorna 0 se não estiver definido
+        Object rndNumbersPerSeedObj = config.get("rndnumbersPerSeed");
+        if (rndNumbersPerSeedObj instanceof Integer) {
+            return (int) rndNumbersPerSeedObj;
+        }
+        throw new RuntimeException("Invalid rndnumbersPerSeed configuration format");
     }
 }

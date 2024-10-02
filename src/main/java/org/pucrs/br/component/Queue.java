@@ -13,6 +13,7 @@ public class Queue {
     private final double[] times; // Array to track time spent in each state
     private int customerCount; // Current number of customers in the queue
     private int lossCount; // Counter for lost customers
+    private int servedCount; // Total number of served customers
 
     // Constructor
     public Queue(final int servers, final int capacity, final double minArrival, final double maxArrival,
@@ -25,6 +26,7 @@ public class Queue {
         this.maxService = maxService;
         this.customerCount = 0; // Initially no customers
         this.lossCount = 0; // Initially no customers are lost
+        this.servedCount = 0; // Initially no customers served
         this.times = new double[capacity + 1]; // Array to track time for each possible queue state
     }
 
@@ -81,7 +83,10 @@ public class Queue {
 
     // Method to handle a customer exiting the queue
     public void out() {
-        customerCount--; // Decrease the customer count when someone leaves
+        if (customerCount > 0) {
+            customerCount--; // Decrease the customer count when someone leaves
+            servedCount++; // Increment the count of served customers
+        }
     }
 
     // Show statistics at the end of the simulation
@@ -93,5 +98,16 @@ public class Queue {
             System.out.println("State " + index + " customers: " + times[index] + " units (" + probability + "% of total time)");
         }
         System.out.println("Number of lost customers = " + lossCount);
+        System.out.println("Total customers served = " + servedCount);
+    }
+
+    // Method to reset the queue for a new simulation
+    public void reset() {
+        customerCount = 0;
+        lossCount = 0;
+        servedCount = 0;
+        for (int i = 0; i <= capacity; i++) {
+            times[i] = 0; // Reset time tracking
+        }
     }
 }

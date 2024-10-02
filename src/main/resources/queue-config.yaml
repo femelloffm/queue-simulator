@@ -24,28 +24,49 @@
 #  The remainder details in this file is self-explained. Good-luck! :-)
 #
 #  DO NOT DELETE THE NEXT LINE STARTED BY '!'
-  !PARAMETERS
 arrivals:
-  Q1: 1.0
+  Q1: 2.0  # Chegada entre 2 a 4 minutos
+  Q2: 4.0
+  Q3: 5.0
 
 queues:
   Q1:
-    servers: 2
-    capacity: 3
-    minArrival: 1.0
-    maxArrival: 4.0
-    minService: 3.0
-    maxService: 4.0
-  Q2:
     servers: 1
+    capacity: 100  # Considerando sem limite específico de capacidade no nó 1
+    minArrival: 2.0
+    maxArrival: 4.0
+    minService: 1.0
+    maxService: 2.0
+  Q2:
+    servers: 2
     capacity: 5
-    minService: 2.0
-    maxService: 3.0
+    minService: 4.0
+    maxService: 8.0
+  Q3:
+    servers: 2
+    capacity: 10
+    minService: 5.0
+    maxService: 15.0
 
 network:
-  -  source: Q1
-     target: Q2
-     probability: 1.0
+  - source: Q1
+    target: Q2
+    probability: 0.8
+  - source: Q1
+    target: Q3
+    probability: 0.2
+  - source: Q2
+    target: Q1
+    probability: 0.5
+  - source: Q2
+    target: exit
+    probability: 0.2
+  - source: Q3
+    target: Q1
+    probability: 0.7
+  - source: Q3
+    target: exit
+    probability: 0.3
 
 rndnumbers:
   - 0.2176

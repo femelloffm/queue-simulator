@@ -65,7 +65,7 @@ public class GeneralQueueSimulator {
             if (success && queues[i + 1].status() <= queues[i + 1].getServers()) {
                 scheduleExit(i + 1);
             } else if (!success) {
-                queues[i + 1].incrementLostCustomers();  // Cliente perdido na próxima fila
+                queues[i + 1].loss();  // Cliente perdido na próxima fila
             }
         }
     }
@@ -101,7 +101,7 @@ public class GeneralQueueSimulator {
         globalTime = eventTime;
     }
 
-    private void showStatistics() {
+    public void showStatistics() {
         System.out.println("---------- SIMULATION COMPLETED ----------");
         System.out.println("Global time = " + globalTime);
         for (int i = 0; i < queues.length; i++) {
@@ -110,4 +110,3 @@ public class GeneralQueueSimulator {
         }
     }
 }
-
