@@ -7,7 +7,6 @@ import org.pucrs.br.simulator.GeneralQueueSimulator;
 import org.pucrs.br.util.ConfigLoader;
 import org.pucrs.br.util.EventComparator;
 
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -49,14 +48,10 @@ public class Main {
                 // Verificações e extração dos parâmetros
                 int servers = queueDetails.containsKey("servers") ? (int) queueDetails.get("servers") : 1; // Valor padrão
                 int capacity = queueDetails.containsKey("capacity") ? (int) queueDetails.get("capacity") : Integer.MAX_VALUE; // Valor padrão
-                double arrivalMinTime = queueDetails.containsKey("arrival") ?
-                        (double) ((Map<String, Object>) queueDetails.get("arrival")).getOrDefault("min", 0.0) : 0;
-                double arrivalMaxTime = queueDetails.containsKey("arrival") ?
-                        (double) ((Map<String, Object>) queueDetails.get("arrival")).getOrDefault("max", 0.0) : 0;
-                double serviceMinTime = queueDetails.containsKey("service") ?
-                        (double) ((Map<String, Object>) queueDetails.get("service")).get("min") : 0.0;
-                double serviceMaxTime = queueDetails.containsKey("service") ?
-                        (double) ((Map<String, Object>) queueDetails.get("service")).get("max") : 0.0;
+                double arrivalMinTime = queueDetails.containsKey("minArrival") ? (double) queueDetails.get("minArrival") : 0.0;
+                double arrivalMaxTime = queueDetails.containsKey("maxArrival") ? (double) queueDetails.get("maxArrival") : 0.0;
+                double serviceMinTime = queueDetails.containsKey("minService") ? (double) queueDetails.get("minService") : 0.0;
+                double serviceMaxTime = queueDetails.containsKey("maxService") ? (double) queueDetails.get("maxService") : 0.0;
 
                 // Cria a fila com a configuração carregada
                 queues[index++] = new Queue(servers, capacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
