@@ -106,7 +106,7 @@ public class GeneralQueueSimulator {
         System.out.println("Global time = " + globalTime);
         for (int i = 0; i < queues.length; i++) {
             System.out.println("--> QUEUE " + (i + 1));
-            queues[i].showStatistics(globalTime);  // Exibe as estatísticas da fila
+            queues[i].showStatistics(globalTime);
         }
     }
 
@@ -127,6 +127,6 @@ public class GeneralQueueSimulator {
                 return destinationProbabilty.destinationIndex();
             }
         }
-        return queueProbabilities.getLast().destinationIndex();
+        return queueProbabilities.get(queueProbabilities.size() - 1).destinationIndex();
     }
 }

@@ -6,6 +6,10 @@ plugins {
 group = 'org.pucrs.br'
 version = '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 repositories {
     mavenCentral()
 }
@@ -29,5 +33,9 @@ jar {
         attributes(
                 'Main-Class': 'org.pucrs.br.Main'
         )
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

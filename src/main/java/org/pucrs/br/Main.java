@@ -15,7 +15,6 @@ import java.util.PriorityQueue;
 
 public class Main {
     private static final String QUEUE_NAME_PREFIX = "Q";
-    private static final int randomNumberCount = 100000; // Número de números aleatórios
     private static final double firstArrivalTime = 2.0; // Tempo do primeiro evento de chegada
 
     public static void main(String[] args) {
@@ -37,7 +36,7 @@ public class Main {
                     13147,         // c
                     Math.pow(2, 35), // m
                     0,             // semente inicial (exemplo)
-                    randomNumberCount
+                    configLoader.getRndNumbersPerSeed()
             );
 
             // Cria a fila de eventos
