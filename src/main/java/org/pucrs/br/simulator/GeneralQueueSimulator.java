@@ -46,8 +46,6 @@ public class GeneralQueueSimulator {
         boolean success = queues[event.destinationIndex()].in();
         if (success && queues[event.destinationIndex()].status() <= queues[event.destinationIndex()].getServers()) {
             scheduleEventByProbability(event.destinationIndex());
-        } else if (!success) {
-            queues[event.destinationIndex()].loss();  // Cliente perdido
         }
         scheduleEntry(event.destinationIndex());
     }
@@ -68,8 +66,6 @@ public class GeneralQueueSimulator {
         boolean success = queues[event.destinationIndex()].in();
         if (success && queues[event.destinationIndex()].status() <= queues[event.destinationIndex()].getServers()) {
             scheduleExit(event.destinationIndex());
-        } else if (!success) {
-            queues[event.destinationIndex()].loss();  // Cliente perdido na próxima fila
         }
     }
 

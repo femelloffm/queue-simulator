@@ -32,7 +32,7 @@ arrivals:
 queues:
   Q1:
     servers: 1
-    capacity: 100  # Considerando sem limite específico de capacidade no nó 1
+    capacity: -1
     minArrival: 2.0
     maxArrival: 4.0
     minService: 1.0

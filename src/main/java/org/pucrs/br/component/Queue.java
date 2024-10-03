@@ -4,9 +4,12 @@ import org.pucrs.br.dto.DestinationProbabilty;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.List;
 
 public class Queue {
+    private static final int UNLIMITED_CAPACITY = -1;
+    private static final int DEFAULT_CAPACITY = 10000;
     private final int servers;
     private final int capacity;
     private final double minArrival;
@@ -14,7 +17,7 @@ public class Queue {
     private final double minService;
     private final double maxService;
     private final List<DestinationProbabilty> probabilities;
-    private final double[] times; // Array to track time spent in each state
+    private double[] times; // Array to track time spent in each state
     private int customerCount; // Current number of customers in the queue
     private int lossCount; // Counter for lost customers
     private int servedCount; // Total number of served customers
@@ -32,7 +35,11 @@ public class Queue {
         this.customerCount = 0; // Initially no customers
         this.lossCount = 0; // Initially no customers are lost
         this.servedCount = 0; // Initially no customers served
-        this.times = new double[capacity + 1]; // Array to track time for each possible queue state
+        if (capacity == UNLIMITED_CAPACITY) {
+            this.times = new double[DEFAULT_CAPACITY + 1]; // Array to track time for each possible queue state
+        } else {
+            this.times = new double[capacity + 1]; // Array to track time for each possible queue state
+        }
     }
 
     // Returns the current number of customers in the queue
@@ -76,7 +83,13 @@ public class Queue {
 
     // Method to handle a new customer trying to enter the queue
     public boolean in() {
-        if (customerCount < capacity) {
+        if (capacity == UNLIMITED_CAPACITY) {
+            customerCount++; // Increment customer count if there's space
+            if (customerCount >= times.length) {
+                times = Arrays.copyOf(times, times.length * 2); // Increase times array length
+            }
+            return true;
+        } else if (customerCount < capacity) {
             customerCount++; // Increment customer count if there's space
             return true;
         } else {
@@ -101,22 +114,15 @@ public class Queue {
     // Show statistics at the end of the simulation
     public void showStatistics(double globalTime) {
         System.out.println("Time spent in each queue state:");
-        for (int index = 0; index <= capacity; index++) {
+        for (int index = 0; index < times.length; index++) {
+            if (times[index] == 0 && capacity == UNLIMITED_CAPACITY) {
+                break;
+            }
             BigDecimal probability = new BigDecimal(times[index] / globalTime * 100) // Probability as a percentage
                     .setScale(2, RoundingMode.HALF_UP); // Round to two decimal places
             System.out.println("State " + index + " customers: " + times[index] + " units (" + probability + "% of total time)");
         }
         System.out.println("Number of lost customers = " + lossCount);
         System.out.println("Total customers served = " + servedCount);
-    }
-
-    // Method to reset the queue for a new simulation
-    public void reset() {
-        customerCount = 0;
-        lossCount = 0;
-        servedCount = 0;
-        for (int i = 0; i <= capacity; i++) {
-            times[i] = 0; // Reset time tracking
-        }
     }
 }
