@@ -10,7 +10,7 @@ public class EventComparator implements Serializable, Comparator<Event> {
 
     @Override
     public int compare(Event firstEvent, Event secondEvent) {
-       return Double.compare(firstEvent.getTime(), secondEvent.getTime());
+       return Double.compare(firstEvent.time(), secondEvent.time());
     }
 
 }

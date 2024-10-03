@@ -24,17 +24,17 @@ public class GeneralQueueSimulator {
         this.globalTime = 0.0;
 
         // Inicializa o primeiro evento de chegada
-        scheduler.add(new Event(EventType.IN, firstArrivalTime, 0));
+        scheduler.add(new Event(EventType.IN, firstArrivalTime, -1, 0));
     }
 
     public void simulate() {
         while (randomNumberGenerator.getCount() > 0) {
             Event event = nextEvent();
-            if (event.getType() == EventType.IN) {
+            if (event.type() == EventType.IN) {
                 entry(event);
-            } else if (event.getType() == EventType.OUT) {
+            } else if (event.type() == EventType.OUT) {
                 exit(event);
-            } else if (event.getType() == EventType.PASS) {
+            } else if (event.type() == EventType.PASS) {
                 pass(event);
             }
         }
@@ -42,45 +42,45 @@ public class GeneralQueueSimulator {
     }
 
     private void entry(Event event) {
-        accumulateTime(event.getTime());
-        boolean success = queues[event.getSourceIndex()].in();
-        if (success && queues[event.getSourceIndex()].status() <= queues[event.getSourceIndex()].getServers()) {
-            scheduleEventByProbability(event.getSourceIndex());
+        accumulateTime(event.time());
+        boolean success = queues[event.destinationIndex()].in();
+        if (success && queues[event.destinationIndex()].status() <= queues[event.destinationIndex()].getServers()) {
+            scheduleEventByProbability(event.destinationIndex());
         } else if (!success) {
-            queues[event.getSourceIndex()].loss();  // Cliente perdido
+            queues[event.destinationIndex()].loss();  // Cliente perdido
         }
-        scheduleEntry(event.getSourceIndex());
+        scheduleEntry(event.destinationIndex());
     }
 
     private void exit(Event event) {
-        accumulateTime(event.getTime());
-        queues[event.getSourceIndex()].out();
-        if (queues[event.getSourceIndex()].status() >= queues[event.getSourceIndex()].getServers()) {
-            scheduleEventByProbability(event.getSourceIndex());
+        accumulateTime(event.time());
+        queues[event.sourceIndex()].out();
+        if (queues[event.sourceIndex()].status() >= queues[event.sourceIndex()].getServers()) {
+            scheduleEventByProbability(event.sourceIndex());
         }
     }
 
     private void pass(Event event) {
-        accumulateTime(event.getTime());
-        if (queues[event.getSourceIndex()].status() >= queues[event.getSourceIndex()].getServers()) {
-            scheduleEventByProbability(event.getSourceIndex());
+        accumulateTime(event.time());
+        if (queues[event.sourceIndex()].status() >= queues[event.sourceIndex()].getServers()) {
+            scheduleEventByProbability(event.sourceIndex());
         }
-        boolean success = queues[event.getDestinationIndex()].in();
-        if (success && queues[event.getDestinationIndex()].status() <= queues[event.getDestinationIndex()].getServers()) {
-            scheduleExit(event.getDestinationIndex());
+        boolean success = queues[event.destinationIndex()].in();
+        if (success && queues[event.destinationIndex()].status() <= queues[event.destinationIndex()].getServers()) {
+            scheduleExit(event.destinationIndex());
         } else if (!success) {
-            queues[event.getDestinationIndex()].loss();  // Cliente perdido na próxima fila
+            queues[event.destinationIndex()].loss();  // Cliente perdido na próxima fila
         }
     }
 
     private void scheduleEntry(int queueIndex) {
         double entryTime = ((queues[queueIndex].getMaxArrival() - queues[queueIndex].getMinArrival()) * randomNumberGenerator.next()) + queues[queueIndex].getMinArrival();
-        scheduler.add(new Event(EventType.IN, globalTime + entryTime, queueIndex));
+        scheduler.add(new Event(EventType.IN, globalTime + entryTime, -1, queueIndex));
     }
 
     private void scheduleExit(int queueIndex) {
         double exitTime = ((queues[queueIndex].getMaxService() - queues[queueIndex].getMinService()) * randomNumberGenerator.next()) + queues[queueIndex].getMinService();
-        scheduler.add(new Event(EventType.OUT, globalTime + exitTime, queueIndex));
+        scheduler.add(new Event(EventType.OUT, globalTime + exitTime, queueIndex, -1));
     }
 
     private void schedulePass(int sourceIndex, int destinationIndex) {
