@@ -25,9 +25,7 @@
 #
 #  DO NOT DELETE THE NEXT LINE STARTED BY '!'
 arrivals:
-  Q1: 2.0  # Chegada entre 2 a 4 minutos
-  Q2: 4.0
-  Q3: 5.0
+  Q1: 2.0
 
 queues:
   Q1:
@@ -71,7 +69,11 @@ network:
     target: exit
     probability: 0.3
 
-rndnumbers:
+rndnumbersPerSeed: 100000
+seeds:
+  - 53492443
+
+rndnumbers: # Nao utilizado para este simulador
   - 0.2176
   - 0.0103
   - 0.1109
@@ -88,11 +90,3 @@ rndnumbers:
   - 0.8324
   - 0.5011
   - 0.2931
-
-rndnumbersPerSeed: 100000
-seeds:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5

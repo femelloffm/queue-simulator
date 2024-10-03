@@ -17,14 +17,11 @@ public class GeneralQueueSimulator {
     private double globalTime;
 
     public GeneralQueueSimulator(RandomNumberGenerator randomNumberGenerator, PriorityQueue<Event> scheduler,
-                                 Queue[] queues, double firstArrivalTime) {
+                                 Queue[] queues) {
         this.randomNumberGenerator = randomNumberGenerator;
         this.scheduler = scheduler;
         this.queues = queues;
         this.globalTime = 0.0;
-
-        // Inicializa o primeiro evento de chegada
-        scheduler.add(new Event(EventType.IN, firstArrivalTime, -1, 0));
     }
 
     public void simulate() {

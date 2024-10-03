@@ -4,6 +4,7 @@ import org.pucrs.br.component.Queue;
 import org.pucrs.br.component.RandomNumberGenerator;
 import org.pucrs.br.dto.DestinationProbabilty;
 import org.pucrs.br.dto.Event;
+import org.pucrs.br.dto.EventType;
 import org.pucrs.br.simulator.GeneralQueueSimulator;
 import org.pucrs.br.util.ConfigLoader;
 import org.pucrs.br.util.EventComparator;
@@ -15,7 +16,6 @@ import java.util.PriorityQueue;
 
 public class Main {
     private static final String QUEUE_NAME_PREFIX = "Q";
-    private static final double firstArrivalTime = 2.0; // Tempo do primeiro evento de chegada
 
     public static void main(String[] args) {
         String filePath = "/queue-config.yaml"; // Substitua pelo caminho correto do seu arquivo YAML
@@ -23,7 +23,9 @@ public class Main {
 
         try {
             Map<String, Map<String, Object>> queueConfig = configLoader.getQueuesConfig();
+            Map<String, Object> arrivalsConfig = configLoader.getArrivalsConfig();
             List<Map<String, Object>> networkConfig = configLoader.getNetworkConfig();
+            List<Integer> seedConfig = configLoader.getSeeds();
 
             // Verificação adicional
             if (queueConfig == null) {
@@ -32,10 +34,10 @@ public class Main {
 
             // Inicializa o gerador de números aleatórios
             RandomNumberGenerator randomNumberGenerator = new RandomNumberGenerator(
-                    16544105325.0, // a
-                    13147,         // c
-                    Math.pow(2, 35), // m
-                    0,             // semente inicial (exemplo)
+                    16544105325.0,  // a
+                    13147,             // c
+                    Math.pow(2, 35),   // m
+                    seedConfig.get(0), // semente inicial (exemplo)
                     configLoader.getRndNumbersPerSeed()
             );
 
@@ -66,10 +68,16 @@ public class Main {
 
                 // Cria a fila com a configuração carregada
                 queues[index++] = new Queue(servers, capacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime, queueNetworkProbabilities);
+
+                // Agenda primeiro evento de chegada desta fila no escalonador, se existir
+                if (arrivalsConfig.containsKey(queueName)) {
+                    double arrivalTime = (double) arrivalsConfig.get(queueName);
+                    scheduler.add(new Event(EventType.IN, arrivalTime, -1, index - 1));
+                }
             }
 
             // Cria uma instância do simulador de filas
-            GeneralQueueSimulator generalQueueSimulator = new GeneralQueueSimulator(randomNumberGenerator, scheduler, queues, firstArrivalTime);
+            GeneralQueueSimulator generalQueueSimulator = new GeneralQueueSimulator(randomNumberGenerator, scheduler, queues);
 
             // Executa a simulação
             generalQueueSimulator.simulate();
