@@ -2,15 +2,19 @@ package org.pucrs.br;
 
 import org.pucrs.br.component.Queue;
 import org.pucrs.br.component.RandomNumberGenerator;
+import org.pucrs.br.dto.DestinationProbabilty;
 import org.pucrs.br.dto.Event;
 import org.pucrs.br.simulator.GeneralQueueSimulator;
 import org.pucrs.br.util.ConfigLoader;
 import org.pucrs.br.util.EventComparator;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
 public class Main {
+    private static final String QUEUE_NAME_PREFIX = "Q";
     private static final int randomNumberCount = 100000; // Número de números aleatórios
     private static final double firstArrivalTime = 2.0; // Tempo do primeiro evento de chegada
 
@@ -20,6 +24,7 @@ public class Main {
 
         try {
             Map<String, Map<String, Object>> queueConfig = configLoader.getQueuesConfig();
+            List<Map<String, Object>> networkConfig = configLoader.getNetworkConfig();
 
             // Verificação adicional
             if (queueConfig == null) {
@@ -53,8 +58,15 @@ public class Main {
                 double serviceMinTime = queueDetails.containsKey("minService") ? (double) queueDetails.get("minService") : 0.0;
                 double serviceMaxTime = queueDetails.containsKey("maxService") ? (double) queueDetails.get("maxService") : 0.0;
 
+                // Obtém as probabilidades de cada um dos roteamentos da fila, ordenados de menos para mais provavel
+                List<DestinationProbabilty> queueNetworkProbabilities = networkConfig.stream()
+                        .filter(config -> config.get("source").equals(queueName))
+                        .map(Main::mapNetworkConfigToProbability)
+                        .sorted(Comparator.comparingDouble(DestinationProbabilty::probability))
+                        .toList();
+
                 // Cria a fila com a configuração carregada
-                queues[index++] = new Queue(servers, capacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime);
+                queues[index++] = new Queue(servers, capacity, arrivalMinTime, arrivalMaxTime, serviceMinTime, serviceMaxTime, queueNetworkProbabilities);
             }
 
             // Cria uma instância do simulador de filas
@@ -67,5 +79,19 @@ public class Main {
             System.err.println("Error occurred: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private static DestinationProbabilty mapNetworkConfigToProbability(Map<String, Object> config) {
+        int destinationIndex;
+        String targetString = (String) config.get("target");
+        if (targetString.equals("exit")) {
+            destinationIndex = -1;
+        } else {
+            String queueNumberAsString = targetString.split(QUEUE_NAME_PREFIX)[1];
+            destinationIndex = Integer.parseInt(queueNumberAsString) - 1;
+        }
+
+        double probability = (double) config.get("probability");
+        return new DestinationProbabilty(destinationIndex, probability);
     }
 }

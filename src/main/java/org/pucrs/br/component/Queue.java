@@ -1,7 +1,10 @@
 package org.pucrs.br.component;
 
+import org.pucrs.br.dto.DestinationProbabilty;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 public class Queue {
     private final int servers;
@@ -10,6 +13,7 @@ public class Queue {
     private final double maxArrival;
     private final double minService;
     private final double maxService;
+    private final List<DestinationProbabilty> probabilities;
     private final double[] times; // Array to track time spent in each state
     private int customerCount; // Current number of customers in the queue
     private int lossCount; // Counter for lost customers
@@ -17,13 +21,14 @@ public class Queue {
 
     // Constructor
     public Queue(final int servers, final int capacity, final double minArrival, final double maxArrival,
-                 final double minService, final double maxService) {
+                 final double minService, final double maxService, final List<DestinationProbabilty> probabilities) {
         this.servers = servers;
         this.capacity = capacity;
         this.minArrival = minArrival;
         this.maxArrival = maxArrival;
         this.minService = minService;
         this.maxService = maxService;
+        this.probabilities = probabilities;
         this.customerCount = 0; // Initially no customers
         this.lossCount = 0; // Initially no customers are lost
         this.servedCount = 0; // Initially no customers served
@@ -58,6 +63,10 @@ public class Queue {
 
     public double getMaxService() {
         return maxService;
+    }
+
+    public List<DestinationProbabilty> getProbabilities() {
+        return probabilities;
     }
 
     // Increment the number of lost customers (when the queue is full)

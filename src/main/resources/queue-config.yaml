@@ -57,12 +57,15 @@ network:
     probability: 0.2
   - source: Q2
     target: Q1
-    probability: 0.5
+    probability: 0.3
   - source: Q2
     target: exit
     probability: 0.2
+  - source: Q2
+    target: Q2
+    probability: 0.5
   - source: Q3
-    target: Q1
+    target: Q3
     probability: 0.7
   - source: Q3
     target: exit
