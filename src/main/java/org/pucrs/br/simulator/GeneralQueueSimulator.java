@@ -60,6 +60,7 @@ public class GeneralQueueSimulator {
 
     private void pass(Event event) {
         accumulateTime(event.time());
+        queues[event.sourceIndex()].out();
         if (queues[event.sourceIndex()].status() >= queues[event.sourceIndex()].getServers()) {
             scheduleEventByProbability(event.sourceIndex());
         }
